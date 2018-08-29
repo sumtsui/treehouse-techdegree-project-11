@@ -22,7 +22,6 @@ mongoose
   .connect(config.db, { useNewUrlParser: true })
   .then(() => {
     console.log(`Successfully connect to ${config.db}`)
-    console.log('\nNODE_ENV:', process.env.NODE_ENV);
   })
   .catch(err => {
     console.log('Could not connect to the database\n', err.message);
