@@ -10,7 +10,14 @@ create a .env file in the root directory, and set
   POST /api/courses/:courseId/reviews<br>
   GET api/users/<br>
 
-please first go to *POST /api/users* to create a new user, and acquire `x-auth-token` from the response header.
-And set `x-auth-token` in the request header to gain authorization.
+please first go to *POST /api/users* to create a new user, send a json request with format like:
+```
+{
+  "fullName": "Steve Roger",
+  "email": "caption@gmail.com",
+  "password": "12345"
+}
+```
+then in your response header there is a `x-auth-token` property. Copy the value and set `x-auth-token` in the request header to gain authorization.
 
 
