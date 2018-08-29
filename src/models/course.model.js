@@ -67,5 +67,8 @@ const CourseSchema = Schema({
   ]
 });
 
-module.exports = mongoose.model('Course', CourseSchema);
-module.exports.Review = mongoose.model('Review', ReviewSchema);
+const Course = mongoose.model('Course', CourseSchema);
+const Review = mongoose.model('Review', ReviewSchema);
+
+module.exports = Course
+module.exports.Review = Review;

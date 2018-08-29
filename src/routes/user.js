@@ -1,20 +1,35 @@
 const express = require('express');
 const router = express.Router();
-const { User, validate } = require('../models/user.model');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const config = require('../../config');
+const User = require('../models/user.model');
+const auth = require('../middleware/auth');
+const Joi = require('joi');
 
 /*
-  User Route
+  User Route /api/users
 */
+
+// get currently authenticated user
+router.get('/', auth, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id).select('-password');
+    res.status(200).send(user);
+  } catch(err) {
+    error.status = 400;
+    next(error);
+  }
+})
 
 // create new user
 router.post('/', async (req, res, next) => {
-  const { error } = validate(req.body);
-  if (error) return res.status(400).send(error.details.map(i => i.message).join(', '));
+  // validate user input
+  const { error } = validateInput(req.body);
+  if (error) {
+    error.status = 400;
+    error.message = error.details.map(i => i.message).join(', ');
+    next(error);
+  }
 
-  req.body.password = await bcrypt.hash(req.body.password, 10);
+  // create new user document object
   const user = new User(req.body);
   
   user
@@ -22,20 +37,23 @@ router.post('/', async (req, res, next) => {
       if (err) {
         if (err.code === 11000) err.message = 'User already registered';
         err.status = 400;
-        next(err);
+        return next(err);
       }
-      else {
-        const token = user.generateAuthToken();
-        res.set({
-          'x-auth-token': token,
-          'Location': '/'
-        }).send(201);
-      }
+      const token = user.generateAuthToken();
+      res.set({
+        'x-auth-token': token,
+        'Location': '/'
+      }).send(201);
     })
 });
 
-// get currently authenticated user
-
-
+function validateInput(user) {
+  const schema = {
+    fullName: Joi.string().min(1).max(50).required(),
+    email: Joi.string().min(1).max(255).required().email(),
+    password: Joi.string().min(5).max(255).required()
+  };
+  return Joi.validate(user, schema, { abortEarly: false });
+}
 
 module.exports = router;

@@ -19,10 +19,13 @@ if (!config.jwtPrivateKey) {
 
 // db connection
 mongoose
-  .connect('mongodb://localhost:27017/course-api', { useNewUrlParser: true })
-  .then(() => console.log('Successfully connect to the database'))
+  .connect(config.db, { useNewUrlParser: true })
+  .then(() => {
+    console.log(`Successfully connect to ${config.db}`)
+    console.log('\nNODE_ENV:', process.env.NODE_ENV);
+  })
   .catch(err => {
-    console.log('Could not connect to the database', err.message);
+    console.log('Could not connect to the database\n', err.message);
   })
 
 const app = express();
@@ -39,7 +42,7 @@ app.use(morgan('dev'));
 app.use('/', indexRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/courses', courseRoute);
-app.use('/api/user', userRoute);
+app.use('/api/users', userRoute);
 
 // send 404 if no other route matched
 app.use((req, res) => {
@@ -51,13 +54,14 @@ app.use((req, res) => {
 // global error handler
 app.use((err, req, res, next) => {
   console.error(err);
-  res.status(err.status || 500).json({
-    message: err.message,
-    // error: {}
-  });
+  res.status(err.status || 500).json(
+    err.message
+  );
 });
 
-// start listening on our port
+// start listening on port
 const server = app.listen(app.get('port'), () => {
   console.log(`Express server is listening on port ${server.address().port}`);
 });
+
+module.exports = server;
