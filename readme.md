@@ -18,6 +18,6 @@ please first go to *POST /api/users* to create a new user, send a json request w
   "password": "12345"
 }
 ```
-then in your response header there is a `x-auth-token` property. Copy the value and set `x-auth-token` in the request header to gain authorization.
+then in the response header there is a `x-auth-token` property. Copy the value and set `x-auth-token` in the request header with that value to gain authorization.
 
 
