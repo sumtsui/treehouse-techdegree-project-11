@@ -46,6 +46,11 @@ const CourseSchema = Schema({
   title: {
     type: String,
     required: true,
+    validate: {
+      // not working!!!
+      validator: v => v.length === 0,
+      message: 'Title can not be empty'
+    }
   },
   description: {
     type: String,

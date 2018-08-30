@@ -53,9 +53,12 @@ app.use((req, res) => {
 // global error handler
 app.use((err, req, res, next) => {
   console.error(err);
-  res.status(err.status || 500).json(
-    err.message
-  );
+  if (err.name === 'ValidationError') err.status = 400;
+  if (err.name === 'CastError') {
+    err.message = 'Course not found for given ID';
+    err.status = 404;
+  }
+  res.status(err.status || 500).json(err.message);
 });
 
 // start listening on port
